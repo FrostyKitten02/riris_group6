@@ -1,0 +1,11 @@
+:root {
+  --main-bg-colour: #0276FA;
+  --main-font-colour: #FFF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
