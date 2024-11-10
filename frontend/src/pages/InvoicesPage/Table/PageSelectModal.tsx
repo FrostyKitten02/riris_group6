@@ -27,7 +27,7 @@ const PageSelectModal: React.FC<PageSelectModalProps> = ({ showModal, setPage, o
 				</Modal.Body>
 				<Modal.Footer>
 					<Button variant="secondary" onClick={onCloseModal}>Close</Button>
-					<Button variant="primary" onClick={saveChanges}>Save changes</Button>
+					<Button variant="primary" onClick={saveChanges}>Go To Page</Button>
 				</Modal.Footer>
 		</Modal>
 	);

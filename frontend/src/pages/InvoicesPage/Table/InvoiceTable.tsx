@@ -11,105 +11,89 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./InvoiceTable.css";
 import PageSelectModal from "./PageSelectModal";
 import axios from "axios";
+import { Invoice } from "../../../classes/Invoice";
+import { Link } from "react-router-dom";
 
 const InvoiceTable = () => {
 	const [currentPage, setCurrentPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(0);
-	const [pages, setPages] = useState([1, 2, 5, 6]);
-	const [data, setInvoices] = useState({
-		id: 1,
-		user: "vk",
-		name: "Račun 1",
-		amount: 500,
-		date: new Date(),
-		dueDate: new Date("2021-01-01"),
-		payer: "UM FERI",
-		statusSent: true,
-		statusPaid: false,
-	});
+	const [totalPages, setTotalPages] = useState<number>(1);
+	const [pages, setPages] = useState<number[]>([1, 2, 5, 6]);
+	const [invoices, setInvoices] = useState<Invoice[]>();
 	const [showModal, setShowModal] = useState(false);
+	const [loading, setLoading] = useState<boolean>(true);
 
-	const invoices = [
-		{
-			id: 1,
-			user: "vk",
-			name: "Račun 1",
-			amount: 500,
-			date: new Date(),
-			dueDate: new Date("2021-01-01"),
-			payer: "UM FERI",
-			statusSent: true,
-			statusPaid: false,
-		},
-		{
-			id: 1,
-			user: "vk",
-			name: "Račun 2",
-			amount: 500,
-			date: new Date(),
-			dueDate: new Date("2021-01-01"),
-			payer: "UM FERI",
-			statusSent: true,
-			statusPaid: false,
-		},
-		{
-			id: 1,
-			user: "vk",
-			name: "Račun 3",
-			amount: 500,
-			date: new Date(),
-			dueDate: new Date("2021-01-01"),
-			payer: "UM FERI",
-			statusSent: true,
-			statusPaid: false,
-		},
-		{
-			id: 1,
-			user: "vk",
-			name: "Račun 4",
-			amount: 500,
-			date: new Date(),
-			dueDate: new Date("2021-01-01"),
-			payer: "UM FERI",
-			statusSent: true,
-			statusPaid: false,
-		},
-		{
-			id: 1,
-			user: "vk",
-			name: "Račun 5",
-			amount: 500,
-			date: new Date(),
-			dueDate: new Date("2021-01-01"),
-			payer: "UM FERI",
-			statusSent: true,
-			statusPaid: false,
-		},
-		{
-			id: 1,
-			user: "vk",
-			name: "Račun 6",
-			amount: 500,
-			date: new Date(),
-			dueDate: new Date("2021-01-01"),
-			payer: "UM FERI",
-			statusSent: true,
-			statusPaid: false,
-		},
-	];
+	// const getAllData = async () => {
+	// 	try {
+	// 		const response = await axios.get("/api/db/all");
+	// 		// Map the response data to Invoice instances
+	// 		const invoiceData: Invoice[] = response.data.map((data: any) =>
+	// 			Invoice.fromJSON(data)
+	// 		);
+	// 		setInvoices(invoiceData); // Set the state with the array of Invoice objects
+	// 	} catch (error) {
+	// 		console.error("Error fetching invoices:", error);
+	// 	} finally {
+	// 		setLoading(false); // Set loading to false after fetch is complete
+	// 	}
+	// };
+
+	const getDataByPage = async (page: number) => {
+		try {
+			const response = await axios.get("/api/db/all/" + page);
+			// Map the response data to Invoice instances
+			const invoiceData: Invoice[] = response.data.map((data: any) =>
+				Invoice.fromJSON(data)
+			);
+			setInvoices(invoiceData); // Set the state with the array of Invoice objects
+		} catch (error) {
+			console.error("Error fetching invoices:", error);
+		} finally {
+			setLoading(false); // Set loading to false after fetch is complete
+		}
+	};
+
+	const getTotalPages = async () => {
+		try {
+			const response = await axios.get("/api/db/pages");
+			// Map the response data to Invoice instances
+			setTotalPages(response.data);
+			setPagesArray(response.data);
+		} catch (error) {
+			console.error("Error fetching page count:", error);
+		}
+	};
+
+	const deleteInvoice = async (id: string) => {
+		try {
+			await axios.delete("api/db/delete/" + id);
+			// Map the response data to Invoice instances
+			refreshData(currentPage);
+		} catch (error) {
+			console.error("Error fetching page count:", error);
+		}
+	};
+
+	const setPagesArray = (total: number) => {
+		if (total === 1) {
+			setPages([]);
+			return;
+		}
+
+		const arr: number[] = [1, 2, total - 1, total];
+
+		if (arr[0] === arr[2] && arr[1] === arr[3]) {
+			arr[2] = -1;
+			arr[3] = -1;
+		}
+
+		console.log(arr);
+
+		setPages(arr);
+	};
 
 	useEffect(() => {
-		//call
-		const func = async () => {
-			const d = await axios.get("/api/db/all");
-			console.log(d);
-
-			setTotalPages(6);
-
-			refreshData(1);
-		};
-
-		func();
+		getTotalPages();
+		refreshData(1);
 	}, []);
 
 	const onPageClicked = (page: number) => {
@@ -118,22 +102,30 @@ const InvoiceTable = () => {
 	};
 
 	const decreasePage = () => {
-		if (currentPage > 1) setCurrentPage(currentPage - 1);
-		refreshData(currentPage - 1);
+		if (currentPage > 1) {
+			setCurrentPage(currentPage - 1);
+			refreshData(currentPage - 1);
+		}
 	};
 
 	const increasePage = () => {
-		if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-		refreshData(currentPage + 1);
+		if (currentPage < totalPages!) {
+			setCurrentPage(currentPage + 1);
+			refreshData(currentPage + 1);
+		}
 	};
 
 	const refreshData = async (page: number) => {
-		setInvoices(invoices[page - 1]);
+		await getDataByPage(page);
 	};
 
 	const closeModal = () => {
 		setShowModal(false);
 	};
+
+	if (loading) {
+		return <h3>Loading</h3>;
+	}
 
 	return (
 		<>
@@ -152,9 +144,9 @@ const InvoiceTable = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{Array.from({ length: 25 }).map((_, index) => (
+						{invoices!.map((data, index) => (
 							<tr>
-								<td>{(index + 1) * currentPage}</td>
+								<td>{(currentPage - 1) * 5 + index + 1}</td>
 								<td>{data.name}</td>
 								<td>{data.amount} €</td>
 								<td>{data.date.toLocaleDateString()}</td>
@@ -194,10 +186,16 @@ const InvoiceTable = () => {
 									</span>
 								</td>
 								<td id="table-button-container">
-									<Button variant="primary" size="sm">
-										<FontAwesomeIcon icon={faFile} />
-									</Button>
-									<Button variant="danger" size="sm">
+									<Link to={"/invoices/" + data._id}>
+										<Button variant="primary" size="sm">
+											<FontAwesomeIcon icon={faFile} />
+										</Button>
+									</Link>
+									<Button
+										variant="danger"
+										size="sm"
+										onClick={() => deleteInvoice(data._id)}
+									>
 										<FontAwesomeIcon icon={faTrash} />
 									</Button>
 								</td>
@@ -205,102 +203,116 @@ const InvoiceTable = () => {
 						))}
 					</tbody>
 					<tfoot>
-						<tr>
-							<td colSpan={8}>
-								<div id="pager-container">
-									<div id="pager">
-										<div
-											className="pager-element pager-arrow-left"
-											onClick={() => decreasePage()}
-										>
-											<FontAwesomeIcon
-												icon={faCaretLeft}
-											/>
-										</div>
-										<div
-											className={
-												"pager-element pager-start" +
-												(pages[0] == currentPage
-													? " bold bg-blue text-white"
-													: "")
-											}
-											onClick={() =>
-												onPageClicked(pages[0])
-											}
-										>
-											{pages[0]}
-										</div>
-										<div
-											className={
-												"pager-element" +
-												(pages[1] == currentPage
-													? " bold bold bg-blue text-white"
-													: "")
-											}
-											onClick={() =>
-												onPageClicked(pages[1])
-											}
-										>
-											{pages[1]}
-										</div>
-										{currentPage > 2 &&
-										currentPage < totalPages - 1 ? (
+						{pages.length > 0 ? (
+							<tr>
+								<td colSpan={8}>
+									<div id="pager-container">
+										<div id="pager">
 											<div
-												className="pager-element bold bold bg-blue text-white"
+												className="pager-element pager-arrow-left"
+												onClick={() => decreasePage()}
+											>
+												<FontAwesomeIcon
+													icon={faCaretLeft}
+												/>
+											</div>
+											<div
+												className={
+													"pager-element pager-start" +
+													(pages[0] == currentPage
+														? " bold bg-blue text-white"
+														: "")
+												}
 												onClick={() =>
-													setShowModal(true)
+													onPageClicked(pages[0])
 												}
 											>
-												{currentPage}
+												{pages[0]}
 											</div>
-										) : (
 											<div
-												className="pager-element pager-middle"
+												className={
+													"pager-element" +
+													(pages[1] == currentPage
+														? " bold bold bg-blue text-white"
+														: "")
+												}
 												onClick={() =>
-													setShowModal(true)
+													onPageClicked(pages[1])
 												}
 											>
-												...
+												{pages[1]}
 											</div>
-										)}
-										<div
-											className={
-												"pager-element" +
-												(pages[2] == currentPage
-													? " bold bold bg-blue text-white"
-													: "")
-											}
-											onClick={() =>
-												onPageClicked(pages[2])
-											}
-										>
-											{pages[2]}
-										</div>
-										<div
-											className={
-												"pager-element pager-end" +
-												(pages[3] == currentPage
-													? " bold bold bg-blue text-white"
-													: "")
-											}
-											onClick={() =>
-												onPageClicked(pages[3])
-											}
-										>
-											{pages[3]}
-										</div>
-										<div
-											className="pager-element pager-arrow-right"
-											onClick={() => increasePage()}
-										>
-											<FontAwesomeIcon
-												icon={faCaretRight}
-											/>
+											{pages[2] !== -1 &&
+											pages[3] !== -1 &&
+											currentPage > 2 &&
+											currentPage < totalPages - 1 ? (
+												<div
+													className="pager-element bold bold bg-blue text-white"
+													onClick={() =>
+														setShowModal(true)
+													}
+												>
+													{currentPage}
+												</div>
+											) : (
+												<div
+													className="pager-element pager-middle"
+													onClick={() =>
+														setShowModal(true)
+													}
+												>
+													...
+												</div>
+											)}
+											{pages[2] !== -1 ? (
+												<div
+													className={
+														"pager-element" +
+														(pages[2] == currentPage
+															? " bold bold bg-blue text-white"
+															: "")
+													}
+													onClick={() =>
+														onPageClicked(pages[2])
+													}
+												>
+													{pages[2]}
+												</div>
+											) : (
+												<></>
+											)}
+											{pages[3] !== -1 ? (
+												<div
+													className={
+														"pager-element pager-end" +
+														(pages[3] == currentPage
+															? " bold bold bg-blue text-white"
+															: "")
+													}
+													onClick={() =>
+														onPageClicked(pages[3])
+													}
+												>
+													{pages[3]}
+												</div>
+											) : (
+												<></>
+											)}
+											<div
+												className="pager-element pager-arrow-right"
+												onClick={() => increasePage()}
+											>
+												<FontAwesomeIcon
+													icon={faCaretRight}
+												/>
+											</div>
 										</div>
 									</div>
-								</div>
-							</td>
-						</tr>
+								</td>
+							</tr>
+						) : (
+							<></>
+						)}
 					</tfoot>
 				</Table>
 			) : (
