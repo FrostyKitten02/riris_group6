@@ -14,6 +14,7 @@ import axios from "axios";
 import { Invoice } from "../../../classes/Invoice";
 import { Link } from "react-router-dom";
 import {useAuth} from "@clerk/clerk-react";
+import {RequestUtil} from "../../../utils/RequestUtil";
 
 const InvoiceTable = () => {
 	const [currentPage, setCurrentPage] = useState(1);
@@ -41,13 +42,7 @@ const InvoiceTable = () => {
 
 	const getDataByPage = async (page: number) => {
 		try {
-			const response = await axios.get("/api/db/all/" + page,
-				{
-						headers: {
-							Authorization : "Bearer " + await auth.getToken()
-						}
-					}
-				);
+			const response = await axios.get("/api/db/all/" + page, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			const invoiceData: Invoice[] = response.data.map((data: any) =>
 				Invoice.fromJSON(data)
@@ -62,13 +57,7 @@ const InvoiceTable = () => {
 
 	const getTotalPages = async () => {
 		try {
-			const response = await axios.get("/api/db/pages",
-				{
-					headers: {
-						Authorization : "Bearer " + await auth.getToken()
-					}
-				}
-				);
+			const response = await axios.get("/api/db/pages", RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			setTotalPages(response.data);
 			setPagesArray(response.data);

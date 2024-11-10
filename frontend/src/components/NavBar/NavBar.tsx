@@ -17,10 +17,7 @@ const NavBar: React.FC = () => {
 			<div>
 				<SignedOut>
 					<Link className="nav-button" to="/auth">
-						<Button variant="light" size="sm">Login</Button>
-					</Link>
-					<Link className="nav-button" to="/auth">
-						<Button variant="light" size="sm">Register</Button>
+						<Button variant="light" size="sm">Sign in</Button>
 					</Link>
 				</SignedOut>
 				<SignedIn>
