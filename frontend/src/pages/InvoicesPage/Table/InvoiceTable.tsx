@@ -13,6 +13,8 @@ import PageSelectModal from "./PageSelectModal";
 import axios from "axios";
 import { Invoice } from "../../../classes/Invoice";
 import { Link } from "react-router-dom";
+import {useAuth} from "@clerk/clerk-react";
+import {RequestUtil} from "../../../utils/RequestUtil";
 
 const InvoiceTable = () => {
 	const [currentPage, setCurrentPage] = useState(1);
@@ -21,6 +23,7 @@ const InvoiceTable = () => {
 	const [invoices, setInvoices] = useState<Invoice[]>();
 	const [showModal, setShowModal] = useState(false);
 	const [loading, setLoading] = useState<boolean>(true);
+	const auth = useAuth();
 
 	// const getAllData = async () => {
 	// 	try {
@@ -39,7 +42,7 @@ const InvoiceTable = () => {
 
 	const getDataByPage = async (page: number) => {
 		try {
-			const response = await axios.get("/api/db/all/" + page);
+			const response = await axios.get("/api/db/all/" + page, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			const invoiceData: Invoice[] = response.data.map((data: any) =>
 				Invoice.fromJSON(data)
@@ -54,7 +57,7 @@ const InvoiceTable = () => {
 
 	const getTotalPages = async () => {
 		try {
-			const response = await axios.get("/api/db/pages");
+			const response = await axios.get("/api/db/pages", RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			setTotalPages(response.data);
 			setPagesArray(response.data);
@@ -144,7 +147,7 @@ const InvoiceTable = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{invoices!.map((data, index) => (
+						{invoices?.map((data, index) => (
 							<tr>
 								<td>{(currentPage - 1) * 5 + index + 1}</td>
 								<td>{data.name}</td>

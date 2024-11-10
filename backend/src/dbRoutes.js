@@ -13,7 +13,9 @@ const router = express.Router();
 // Route to add a document
 router.post("/add", async (req, res) => {
 	try {
-		const response = await addDocument(req.body);
+		const doc = req.body;
+		doc.userId = req.auth.userId;
+		const response = await addDocument(doc);
 		res.json(response);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
@@ -23,7 +25,9 @@ router.post("/add", async (req, res) => {
 // Route to add a document
 router.post("/addList", async (req, res) => {
 	try {
-		const response = await addDocumentsList(req.body);
+		const docs = req.body;
+		docs.forEach(d => d.userId = req.auth.userId)
+		const response = await addDocumentsList(docs);
 		res.json(response);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
@@ -85,6 +89,7 @@ router.delete("/delete/:id", async (req, res) => {
 
 // Route to update a document by `_id`
 router.put("/update/:id", async (req, res) => {
+	//should only owner be able to update this? if so then wee need to add a check here!!
 	const { id } = req.params;
 	const newData = req.body; // Get the new data from request body
 
