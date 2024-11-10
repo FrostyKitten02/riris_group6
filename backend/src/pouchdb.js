@@ -1,6 +1,6 @@
 const PouchDB = require("pouchdb");
 const path = require("path");
-const db = new PouchDB(path.join(__dirname, "my_database"));
+const db = new PouchDB("my_database");
 
 // Add a document
 async function addDocument(doc) {
