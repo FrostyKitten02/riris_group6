@@ -144,7 +144,7 @@ const InvoiceTable = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{invoices!.map((data, index) => (
+						{invoices?.map((data, index) => (
 							<tr>
 								<td>{(currentPage - 1) * 5 + index + 1}</td>
 								<td>{data.name}</td>
