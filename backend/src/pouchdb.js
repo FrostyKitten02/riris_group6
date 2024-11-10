@@ -1,9 +1,15 @@
 const PouchDB = require("pouchdb");
-const db = new PouchDB("my_database");
+const path = require("path");
+const db = new PouchDB(path.join(__dirname, "my_database"));
 
 // Add a document
 async function addDocument(doc) {
   return await db.post(doc);
+}
+
+// Add a document
+async function addDocumentsList(doc) {
+  return await db.bulkDocs(doc);
 }
 
 // Get all documents
@@ -46,6 +52,15 @@ async function updateDocument(id, newData) {
   }
 }
 
+//wipe entire db
+async function destroy() {
+  try {
+    await db.destroy();
+  } catch {
+    throw new Error("Failed to destroy database");
+  }
+};
+
 // Other PouchDB operations can be added here
 
-module.exports = { addDocument, getAllDocuments, deleteDocument, deleteDocumentById, updateDocument };
+module.exports = { addDocument, addDocumentsList, getAllDocuments, deleteDocument, deleteDocumentById, updateDocument, destroy };
