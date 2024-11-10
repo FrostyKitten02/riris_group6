@@ -10,12 +10,15 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./InvoiceTable.css";
 import PageSelectModal from "./PageSelectModal";
+import axios from "axios";
 
 const InvoiceTable = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(0);
 	const [pages, setPages] = useState([1, 2, 5, 6]);
 	const [data, setInvoices] = useState({
+		id: 1,
+		user: "vk",
 		name: "Račun 1",
 		amount: 500,
 		date: new Date(),
@@ -28,6 +31,8 @@ const InvoiceTable = () => {
 
 	const invoices = [
 		{
+			id: 1,
+			user: "vk",
 			name: "Račun 1",
 			amount: 500,
 			date: new Date(),
@@ -37,6 +42,8 @@ const InvoiceTable = () => {
 			statusPaid: false,
 		},
 		{
+			id: 1,
+			user: "vk",
 			name: "Račun 2",
 			amount: 500,
 			date: new Date(),
@@ -46,6 +53,8 @@ const InvoiceTable = () => {
 			statusPaid: false,
 		},
 		{
+			id: 1,
+			user: "vk",
 			name: "Račun 3",
 			amount: 500,
 			date: new Date(),
@@ -55,6 +64,8 @@ const InvoiceTable = () => {
 			statusPaid: false,
 		},
 		{
+			id: 1,
+			user: "vk",
 			name: "Račun 4",
 			amount: 500,
 			date: new Date(),
@@ -64,6 +75,8 @@ const InvoiceTable = () => {
 			statusPaid: false,
 		},
 		{
+			id: 1,
+			user: "vk",
 			name: "Račun 5",
 			amount: 500,
 			date: new Date(),
@@ -73,6 +86,8 @@ const InvoiceTable = () => {
 			statusPaid: false,
 		},
 		{
+			id: 1,
+			user: "vk",
 			name: "Račun 6",
 			amount: 500,
 			date: new Date(),
@@ -85,9 +100,16 @@ const InvoiceTable = () => {
 
 	useEffect(() => {
 		//call
-		setTotalPages(6);
+		const func = async () => {
+			const d = await axios.get("/api/db/all");
+			console.log(d);
 
-		refreshData(1);
+			setTotalPages(6);
+
+			refreshData(1);
+		};
+
+		func();
 	}, []);
 
 	const onPageClicked = (page: number) => {

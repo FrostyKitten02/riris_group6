@@ -1,11 +1,21 @@
 const express = require("express");
-const { addDocument, getAllDocuments, deleteDocument, deleteDocumentById, updateDocument } = require("../src/pouchdb");
+const { addDocument, addDocumentsList, getAllDocuments, deleteDocument, deleteDocumentById, updateDocument, destroy } = require("../src/pouchdb");
 const router = express.Router();
 
 // Route to add a document
 router.post("/add", async (req, res) => {
   try {
     const response = await addDocument(req.body);
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Route to add a document
+router.post("/addList", async (req, res) => {
+  try {
+    const response = await addDocumentsList(req.body);
     res.json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -58,5 +68,14 @@ router.put("/update/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+router.get("/wipe", async (req, res) => {
+  try {
+    await destroy();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+})
 
 module.exports = router;

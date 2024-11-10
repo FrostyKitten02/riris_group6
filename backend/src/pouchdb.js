@@ -7,6 +7,11 @@ async function addDocument(doc) {
   return await db.post(doc);
 }
 
+// Add a document
+async function addDocumentsList(doc) {
+  return await db.bulkDocs(doc);
+}
+
 // Get all documents
 async function getAllDocuments() {
   return await db.allDocs({ include_docs: true });
@@ -47,6 +52,15 @@ async function updateDocument(id, newData) {
   }
 }
 
+//wipe entire db
+async function destroy() {
+  try {
+    await db.destroy();
+  } catch {
+    throw new Error("Failed to destroy database");
+  }
+};
+
 // Other PouchDB operations can be added here
 
-module.exports = { addDocument, getAllDocuments, deleteDocument, deleteDocumentById, updateDocument };
+module.exports = { addDocument, addDocumentsList, getAllDocuments, deleteDocument, deleteDocumentById, updateDocument, destroy };
