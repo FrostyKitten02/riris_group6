@@ -26,7 +26,7 @@ const NavBar: React.FC = () => {
 					</Link>
 					<SignOutButton>
 						<Button variant="light" size="sm">
-							Sing out
+							Sign out
 						</Button>
 					</SignOutButton>
 				</SignedIn>
