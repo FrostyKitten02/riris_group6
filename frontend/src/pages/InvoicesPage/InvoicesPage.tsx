@@ -4,11 +4,14 @@ import InvoiceTable from "./Table/InvoiceTable";
 import ExcelFileInput from "./ExcelImporter/ExcelImporter";
 import axios from "axios";
 import { Invoice } from "../../classes/Invoice";
+import {RequestUtil} from "../../utils/RequestUtil";
+import {useAuth} from "@clerk/clerk-react";
 
 const InvoicesPage: React.FC = () => {
+	const auth = useAuth();
 	const importInvoices = async (invoices: Invoice[]) => {
 		try {
-			await axios.post("api/db/addList", invoices);
+			await axios.post(RequestUtil.BASE_API_URL + "/db/addList", invoices, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			window.location.reload();
 		} catch (error) {

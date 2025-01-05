@@ -8,18 +8,15 @@ import {verifyToken} from '@clerk/express'
 const app = express();
 const PORT = 3000;
 
-const corsOptions ={
-  origin:'http://localhost:5173', 
-  credentials:true,            //access-control-allow-credentials:true
-  optionSuccessStatus:200
-}
-
-
 app.use(async (req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
   const token = req.header("Authorization")?.replace("Bearer ", "")
+  console.log("auth")
   if (token == null) {
-    res.status(403);
-    return;
+    return res.status(403).send({error: "Missng auth"});
   }
 
   try {
@@ -32,15 +29,22 @@ app.use(async (req, res, next) => {
     }
   } catch (e) {
     console.error(e)
-    res.status(403);
+    return res.status(403).send({error: "Error validating session"})
   }
 
     next()
 })
 
+app.use(
+    cors({
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: '*'
+    })
+);
 app.use(bodyParser.json());
-app.use("/db", dbRoutes);
-app.use(cors(corsOptions));
+app.use("/api/db", dbRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

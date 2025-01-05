@@ -42,7 +42,7 @@ const InvoiceTable = () => {
 
 	const getDataByPage = async (page: number) => {
 		try {
-			const response = await axios.get("/api/db/all/" + page, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
+			const response = await axios.get(RequestUtil.BASE_API_URL + "/db/all/" + page, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			const invoiceData: Invoice[] = response.data.map((data: any) =>
 				Invoice.fromJSON(data)
@@ -57,7 +57,7 @@ const InvoiceTable = () => {
 
 	const getTotalPages = async () => {
 		try {
-			const response = await axios.get("/api/db/pages", RequestUtil.getDefaultRequestConfig(await auth.getToken()));
+			const response = await axios.get(RequestUtil.BASE_API_URL + "/db/pages", RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			setTotalPages(response.data);
 			setPagesArray(response.data);
@@ -68,7 +68,7 @@ const InvoiceTable = () => {
 
 	const deleteInvoice = async (id: string) => {
 		try {
-			await axios.delete("api/db/delete/" + id);
+			await axios.delete(RequestUtil.BASE_API_URL + "/db/delete/" + id, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			refreshData(currentPage);
 		} catch (error) {
@@ -96,6 +96,7 @@ const InvoiceTable = () => {
 
 	useEffect(() => {
 		getTotalPages();
+		console.log("fetching")
 		refreshData(1);
 	}, []);
 
