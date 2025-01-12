@@ -15,6 +15,8 @@ import { Invoice } from "../../../classes/Invoice";
 import { Link } from "react-router-dom";
 import {useAuth} from "@clerk/clerk-react";
 import {RequestUtil} from "../../../utils/RequestUtil";
+//@ts-ignore
+import React from 'react';
 
 const InvoiceTable = () => {
 	const [currentPage, setCurrentPage] = useState(1);
@@ -42,7 +44,7 @@ const InvoiceTable = () => {
 
 	const getDataByPage = async (page: number) => {
 		try {
-			const response = await axios.get(RequestUtil.BASE_API_URL + "/db/all/" + page, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
+			const response = await axios.get(RequestUtil.getBaseApiUrl() + "/db/all/" + page, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			const invoiceData: Invoice[] = response.data.map((data: any) =>
 				Invoice.fromJSON(data)
@@ -57,7 +59,7 @@ const InvoiceTable = () => {
 
 	const getTotalPages = async () => {
 		try {
-			const response = await axios.get(RequestUtil.BASE_API_URL + "/db/pages", RequestUtil.getDefaultRequestConfig(await auth.getToken()));
+			const response = await axios.get(RequestUtil.getBaseApiUrl() + "/db/pages", RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			setTotalPages(response.data);
 			setPagesArray(response.data);
@@ -68,7 +70,7 @@ const InvoiceTable = () => {
 
 	const deleteInvoice = async (id: string) => {
 		try {
-			await axios.delete(RequestUtil.BASE_API_URL + "/db/delete/" + id, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
+			await axios.delete(RequestUtil.getBaseApiUrl() + "/db/delete/" + id, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			refreshData(currentPage);
 		} catch (error) {

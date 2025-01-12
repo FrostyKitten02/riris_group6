@@ -1,16 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000', // Backend server URL
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // Optional: remove /api prefix if needed
-      },
-    },
+  plugins: [react(), tsconfigPaths()],
+  // @ts-ignore
+  test: {
+    globals: true,         // Allows global functions like describe/it
+    environment: 'jsdom',  // Use jsdom for DOM simulation
+    include: ['src/**/*.{test,spec}.js'], // Specify test file patterns
+    setupFiles: './src/setupTests.js', // Optional setup for global mocks or configurations
   },
-})
+});

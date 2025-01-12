@@ -9,6 +9,15 @@ const app = express();
 const PORT = 3000;
 
 app.use(async (req, res, next) => {
+  if (process.env.NODE_ENV === 'test') {
+    req.auth = {
+      sessionId: "MOCK_SESSION_ID",
+      userId: "MOCK_USER_ID"
+    }
+
+    return next();
+  }
+
   if (req.method === 'OPTIONS') {
     return next();
   }
@@ -32,7 +41,7 @@ app.use(async (req, res, next) => {
     return res.status(403).send({error: "Error validating session"})
   }
 
-    next()
+    return next()
 })
 
 app.use(
@@ -49,3 +58,5 @@ app.use("/api/db", dbRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+export default app;
