@@ -32,7 +32,7 @@ jobs:
         run: npm run test -- --coverage
 
       - name: Upload frontend coverage report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
           path: ./frontend/coverage/
@@ -60,7 +60,7 @@ jobs:
         run: npm run test -- --coverage
 
       - name: Upload backend coverage report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: backend-coverage
           path: ./backend/coverage/
@@ -70,13 +70,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download frontend coverage report
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: frontend-coverage
           path: ./frontend-coverage
 
       - name: Download backend coverage report
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: backend-coverage
           path: ./backend-coverage
