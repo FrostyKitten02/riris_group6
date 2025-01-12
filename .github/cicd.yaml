@@ -1,0 +1,82 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main, *
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js for frontend
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies (frontend)
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm run test -- --coverage
+
+      - name: Upload frontend coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: frontend-coverage
+          path: ./frontend/coverage/
+
+  backend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js for backend
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies (backend)
+        working-directory: ./backend
+        run: npm install
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: npm run test -- --coverage
+
+      - name: Upload backend coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend-coverage
+          path: ./backend/coverage/
+
+  upload-artifacts:
+    needs: [frontend, backend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download frontend coverage report
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend-coverage
+          path: ./frontend-coverage
+
+      - name: Download backend coverage report
+        uses: actions/download-artifact@v2
+        with:
+          name: backend-coverage
+          path: ./backend-coverage
