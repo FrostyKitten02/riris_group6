@@ -1,9 +1,9 @@
 import {fireEvent, render, screen, waitFor} from "@testing-library/react";
-import ExcelImporter from "./ExcelImporter";
+import ExcelImporter from "../../../../src/pages/InvoicesPage/ExcelImporter/ExcelImporter";
+import { jest } from '@jest/globals';
 //@ts-ignore
 import React from 'react';
 // Mock the XLSX library
-
 test('should call importInvoices when a file is selected', async () => {
     // Mock the importInvoices function
     const importInvoicesMock = jest.fn();

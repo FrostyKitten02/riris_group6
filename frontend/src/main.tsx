@@ -12,7 +12,7 @@ if (!PUBLISHABLE_KEY) {
     throw new Error("Missing Publishable Key")
 }
 
-if (!RequestUtil.BASE_API_URL) {
+if (!RequestUtil.getBaseApiUrl()) {
     throw new Error("Missing base api url")
 }
 

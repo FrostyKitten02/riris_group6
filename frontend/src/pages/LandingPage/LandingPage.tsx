@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const LandingPage: React.FC = () => {
     return(
-        <div id="landing-container">
+        <div id="landing-container" data-testid="landing-container">
             <h1 id="landing-heading">Invoice Manager</h1>
             <FontAwesomeIcon icon={faCoins} />
         </div>

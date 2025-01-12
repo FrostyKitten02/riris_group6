@@ -11,7 +11,7 @@ const InvoicesPage: React.FC = () => {
 	const auth = useAuth();
 	const importInvoices = async (invoices: Invoice[]) => {
 		try {
-			await axios.post(RequestUtil.BASE_API_URL + "/db/addList", invoices, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
+			await axios.post(RequestUtil.getBaseApiUrl() + "/db/addList", invoices, RequestUtil.getDefaultRequestConfig(await auth.getToken()));
 			// Map the response data to Invoice instances
 			window.location.reload();
 		} catch (error) {
