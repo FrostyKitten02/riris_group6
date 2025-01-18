@@ -2,7 +2,10 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom'; // for extended DOM matchers
-
+jest.mock('../../../utils/RequestUtil', () => ({
+    getBaseApiUrl: () => 'http://mocked-base-url',
+    getDefaultRequestConfig: jest.fn().mockResolvedValue({ headers: { Authorization: 'Bearer mocked-token' } }),
+}));
 import AddInvoiceForm from '../../../../src/pages/InvoicesPage/AddInvoice/AddInvoiceForm';
 
 describe('AddInvoiceForm Component', () => {
