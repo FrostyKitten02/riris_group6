@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - "main"
+  workflow_dispatch:
 
 jobs:
   frontend:
@@ -23,6 +24,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Cache node_modules frontend  # Caching odvisnosti (frontend)
+        uses: actions/cache@v3
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-
+
       - name: Install dependencies (frontend)
         working-directory: ./frontend
         run: npm install
@@ -30,6 +39,17 @@ jobs:
       - name: Run frontend tests
         working-directory: ./frontend
         run: npm run test -- --coverage
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Upload frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: |
+            frontend/dist/
 
       - name: Upload frontend coverage report
         uses: actions/upload-artifact@v4
@@ -51,6 +71,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Cache node_modules backend  # Caching odvisnosti (frontend)
+        uses: actions/cache@v3
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-backend-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-
+
       - name: Install dependencies (backend)
         working-directory: ./backend
         run: npm install
@@ -58,6 +86,14 @@ jobs:
       - name: Run backend tests
         working-directory: ./backend
         run: npm run test -- --coverage
+
+      - name: Upload backend build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-build
+          path: |
+            backend/
+            backend/node_modules/
 
       - name: Upload backend coverage report
         uses: actions/upload-artifact@v4
