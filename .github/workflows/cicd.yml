@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: 02_DevOps_Testing/primer/frontend/node_modules
-          key: ${{ runner.os }}-frontend-${{ hashFiles('02_DevOps_Testing/primer/frontend/package-lock.json') }}
+          key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-frontend-
 
@@ -64,7 +64,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: 02_DevOps_Testing/primer/frontend/node_modules
-          key: ${{ runner.os }}-backend-${{ hashFiles('02_DevOps_Testing/primer/frontend/package-lock.json') }}
+          key: ${{ runner.os }}-backend-${{ hashFiles('backend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-backend-
 
