@@ -23,6 +23,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Cache node_modules frontend  # Caching odvisnosti (frontend)
+        uses: actions/cache@v3
+        with:
+          path: 02_DevOps_Testing/primer/frontend/node_modules
+          key: ${{ runner.os }}-frontend-${{ hashFiles('02_DevOps_Testing/primer/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-
+
       - name: Install dependencies (frontend)
         working-directory: ./frontend
         run: npm install
@@ -50,6 +58,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Cache node_modules backend  # Caching odvisnosti (frontend)
+        uses: actions/cache@v3
+        with:
+          path: 02_DevOps_Testing/primer/frontend/node_modules
+          key: ${{ runner.os }}-backend-${{ hashFiles('02_DevOps_Testing/primer/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-
 
       - name: Install dependencies (backend)
         working-directory: ./backend
