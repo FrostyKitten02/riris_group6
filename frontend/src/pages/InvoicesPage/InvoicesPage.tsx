@@ -6,6 +6,8 @@ import axios from "axios";
 import { Invoice } from "../../classes/Invoice";
 import {RequestUtil} from "../../utils/RequestUtil";
 import {useAuth} from "@clerk/clerk-react";
+import {Button} from "react-bootstrap";
+import {Link} from "react-router-dom";
 
 const InvoicesPage: React.FC = () => {
 	const auth = useAuth();
@@ -23,7 +25,16 @@ const InvoicesPage: React.FC = () => {
 	return (
 		<div id="table-container">
 			<h3>Računi</h3>
-			<ExcelFileInput importInvoices={importInvoices} />
+			<div className="container">
+				<div className="d-flex flex-row" style={{height: "30px"}}>
+					<Link to="/invoices/add">
+						<Button variant="primary" size="sm">
+							Dodaj
+						</Button>
+					</Link>
+					<ExcelFileInput importInvoices={importInvoices} />
+				</div>
+			</div>
 			<InvoiceTable />
 		</div>
 	);
