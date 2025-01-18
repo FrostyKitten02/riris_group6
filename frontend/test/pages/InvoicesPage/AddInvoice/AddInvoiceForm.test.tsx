@@ -2,7 +2,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom'; // for extended DOM matchers
-jest.mock('../../../utils/RequestUtil', () => ({
+
+jest.mock('../../../../src/utils/RequestUtil', () => ({
     getBaseApiUrl: () => 'http://mocked-base-url',
     getDefaultRequestConfig: jest.fn().mockResolvedValue({ headers: { Authorization: 'Bearer mocked-token' } }),
 }));
