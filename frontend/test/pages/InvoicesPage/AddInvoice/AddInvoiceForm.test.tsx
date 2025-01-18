@@ -7,6 +7,12 @@ jest.mock('../../../../src/utils/RequestUtil', () => ({
     getBaseApiUrl: () => 'http://mocked-base-url',
     getDefaultRequestConfig: jest.fn().mockResolvedValue({ headers: { Authorization: 'Bearer mocked-token' } }),
 }));
+
+jest.mock('@clerk/clerk-react', () => ({
+    useAuth: () => ({
+        getToken: async () => 'mocked-jwt-token',
+    }),
+}));
 import AddInvoiceForm from '../../../../src/pages/InvoicesPage/AddInvoice/AddInvoiceForm';
 
 describe('AddInvoiceForm Component', () => {
