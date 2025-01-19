@@ -81,24 +81,13 @@ jobs:
     needs: docker-build-frontend
     runs-on: ubuntu-latest
     steps:
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          passphrase: ${{ secrets.PASSPHRASE }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: whoami
-
-
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           cat >> ~/.ssh/config <<-END
-            Host staging
+            Host server
               HostName $SSH_HOST
               Port $SSH_PORT
               User $SSH_USER
@@ -110,9 +99,19 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
-
-      - name: Attempt SSH connection
-        run: ssh staging
+      - name: Transfer JSON Config to Server
+        run: |
+          echo '${{ secrets.FRONTEND_JSON_COFIG }}' > config.json
+          scp -P ${{ secrets.SSH_PORT }} config.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/rirs/config.json
+          scp -P ${{ secrets.SSH_PORT }} config.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/rirs/config.json
+      - name: Deploy frontend docker image
+        run: |
+          ssh server << 'EOF'
+          docker pull afridau/afridau:frontend-latest
+            docker run -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
+            docker run -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
+            docker cp /opt/rirs/config.json rirs-frontend:/app/config.json
+          EOF
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
 
