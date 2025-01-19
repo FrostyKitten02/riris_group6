@@ -114,8 +114,6 @@ jobs:
             docker run --restart unless-stopped -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
             docker cp /opt/rirs/config.json rirs-f:/usr/share/nginx/html/conf.json
           EOF
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
 
   backend:
     runs-on: ubuntu-latest
@@ -182,38 +180,36 @@ jobs:
           docker push afridau/afridau:backend-latest
           docker push afridau/afridau:backend-${{ github.run_number }}
 
-    deploy-backend:
-      needs: docker-build-backend
-      runs-on: ubuntu-latest
-      steps:
-        - name: Configure SSH
-          run: |
-            mkdir -p ~/.ssh/
-            echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
-            cat >> ~/.ssh/config <<-END
-              Host server
-                HostName $SSH_HOST
-                Port $SSH_PORT
-                User $SSH_USER
-                IdentityFile ~/.ssh/id_rsa
-                StrictHostKeyChecking no
-            END
-          env:
-            SSH_USER: ${{ secrets.SSH_USER }}
-            SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            SSH_HOST: ${{ secrets.SSH_HOST }}
-            SSH_PORT: ${{ secrets.SSH_PORT }}
-        - name: Deploy backend docker image
-          run: |
-            ssh server << 'EOF'
-              docker pull afridau/afridau:backend-latest
-              docker stop rirs-b
-              docker rm rirs-b
-              docker run --restart unless-stopped -d -p 1001:3000 --name rirs-f afridau/afridau:backend-latest
-            EOF
-          env:
-            SSH_HOST: ${{ secrets.SSH_HOST }}
+  deploy-backend:
+    needs: docker-build-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          cat >> ~/.ssh/config <<-END
+            Host server
+              HostName $SSH_HOST
+              Port $SSH_PORT
+              User $SSH_USER
+              IdentityFile ~/.ssh/id_rsa
+              StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+      - name: Deploy backend docker image
+        run: |
+          ssh server << 'EOF'
+            docker pull afridau/afridau:backend-latest
+            docker stop rirs-b
+            docker rm rirs-b
+            docker run --restart unless-stopped -d -p 1001:3000 --name rirs-f afridau/afridau:backend-latest
+          EOF
 
   upload-artifacts:
     needs: [frontend, backend]
