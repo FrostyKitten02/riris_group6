@@ -84,30 +84,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Setup SSH Key
+      - name: Configure SSH
         run: |
-          mkdir -p ~/.ssh
-          touch ~/.ssh/config
-          touch ~/.ssh/known_hosts
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/rirs_is_rsa
-          chmod 600 ~/.ssh/rirs_is_rsa
-          chmod 700 ~/.ssh
-          ssh-keyscan -t rsa -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-#      - name: Transfer JSON Config to Server
-#        run: |
-#          echo '${{ secrets.FRONTEND_JSON_COFIG }}' > config.json
-#          scp -P ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa config.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/rirs/config.json
-      - name: test-ssh
-        run: ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-      - name: Deploy frontend image
-        run: |
-          set -x
-          ssh -vvv -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            docker pull afridau/afridau:frontend-latest
-            docker run -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
-            docker cp /opt/rirs/config.json rirs-frontend:/app/config.json
-          EOF
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_rsa.key
+          chmod 600 ~/.ssh/is_rsa.key
+          cat >>~/.ssh/config <<END
+          Host staging
+            HostName $SSH_HOST
+            Port $SSH_PORT
+            User $SSH_USER
+            IdentityFile ~/.ssh/staging.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+      - name: Attempt ssh connection
+        run: ssh ${{SSH_HOST}}
 
   backend:
     runs-on: ubuntu-latest
