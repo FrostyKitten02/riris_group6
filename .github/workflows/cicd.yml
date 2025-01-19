@@ -82,15 +82,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: whoami
-
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -100,7 +91,6 @@ jobs:
           touch ~/.ssh/config
           touch ~/.ssh/known_hosts
           echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/rirs_is_rsa
-          mkdir -p ~/.ssh
           chmod 600 ~/.ssh/rirs_is_rsa
           chmod 700 ~/.ssh
           ssh-keyscan -t rsa -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
@@ -112,7 +102,7 @@ jobs:
         run: ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
       - name: Deploy frontend image
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -vvv -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             docker pull afridau/afridau:frontend-latest
             docker run -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
             docker cp /opt/rirs/config.json rirs-frontend:/app/config.json
