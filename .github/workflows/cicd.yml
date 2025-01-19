@@ -102,6 +102,7 @@ jobs:
         run: ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
       - name: Deploy frontend image
         run: |
+          set -x
           ssh -vvv -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             docker pull afridau/afridau:frontend-latest
             docker run -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
