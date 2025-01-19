@@ -90,7 +90,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/rirs_id_rsa
           chmod 600 ~/.ssh/rirs_id_rsa
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p @{{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
       - name: Transfer JSON Config to Server
         run: |
           echo '${{ secrets.MY_JSON_CONFIG }}' > config.json
