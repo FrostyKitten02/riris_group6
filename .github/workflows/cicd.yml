@@ -99,7 +99,8 @@ jobs:
 #        run: |
 #          echo '${{ secrets.FRONTEND_JSON_COFIG }}' > config.json
 #          scp -P ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa config.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/rirs/config.json
-
+      - name: test-ssh
+        run: ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
       - name: Deploy frontend image
         run: |
           ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
