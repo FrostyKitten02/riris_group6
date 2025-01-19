@@ -102,8 +102,8 @@ jobs:
       - name: Transfer JSON Config to Server
         run: |
           echo '${{ secrets.FRONTEND_JSON_COFIG }}' > config.json
-          scp -P ${{ secrets.SSH_PORT }} config.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/rirs/config.json
-          scp -P ${{ secrets.SSH_PORT }} config.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/rirs/config.json
+          scp config.json server:/opt/rirs/config.json
+          scp config.json server:/opt/rirs/config.json
       - name: Deploy frontend docker image
         run: |
           ssh server << 'EOF'
