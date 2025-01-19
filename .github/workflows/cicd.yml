@@ -93,7 +93,7 @@ jobs:
           chmod 600 ~/.ssh/rirs_is_rsa
           chmod 600 ~/.ssh/rirs_is_rsa.pub
           chmod 700 ~/.ssh
-          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -t rsa -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 #      - name: Transfer JSON Config to Server
 #        run: |
 #          echo '${{ secrets.FRONTEND_JSON_COFIG }}' > config.json
