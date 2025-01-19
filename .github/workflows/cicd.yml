@@ -88,10 +88,11 @@ jobs:
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | sed 's/\r$//' > ~/.ssh/rirs_is_rsa
-          echo "${{ secrets.SSH_PUBLIC_KEY }}" | sed 's/\r$//' > ~/.ssh/rirs_is_rsa.pub
+          touch ~/.ssh/config
+          touch ~/.ssh/known_hosts
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/rirs_is_rsa
+          mkdir -p ~/.ssh
           chmod 600 ~/.ssh/rirs_is_rsa
-          chmod 600 ~/.ssh/rirs_is_rsa.pub
           chmod 700 ~/.ssh
           ssh-keyscan -t rsa -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 #      - name: Transfer JSON Config to Server
@@ -101,7 +102,7 @@ jobs:
 
       - name: Deploy frontend image
         run: |
-          ssh -o PubkeyAcceptedKeyTypes=+ssh-rsa -o HostKeyAlgorithms=+ssh-rsa -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             docker pull afridau/afridau:frontend-latest
             docker run -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
             docker cp /opt/rirs/config.json rirs-frontend:/app/config.json
