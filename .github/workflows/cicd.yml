@@ -110,7 +110,7 @@ jobs:
             docker pull afridau/afridau:frontend-latest
             docker stop rirs-f
             docker run --restart unless-stopped -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
-            docker cp /opt/rirs/config.json rirs-f:/app/config.json
+            docker cp /opt/rirs/config.json rirs-f:/usr/share/nginx/html/conf.json
           EOF
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
