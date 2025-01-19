@@ -209,7 +209,7 @@ jobs:
               docker pull afridau/afridau:backend-latest
               docker stop rirs-b
               docker rm rirs-b
-              docker run --restart unless-stopped -d -p 1000:80 --name rirs-f afridau/afridau:backend-latest
+              docker run --restart unless-stopped -d -p 1001:3000 --name rirs-f afridau/afridau:backend-latest
             EOF
           env:
             SSH_HOST: ${{ secrets.SSH_HOST }}
