@@ -82,6 +82,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: whoami
+
       - name: Checkout code
         uses: actions/checkout@v3
 
