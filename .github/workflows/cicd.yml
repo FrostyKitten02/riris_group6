@@ -107,10 +107,10 @@ jobs:
       - name: Deploy frontend docker image
         run: |
           ssh server << 'EOF'
-          docker pull afridau/afridau:frontend-latest
-            docker run -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
-            docker run -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
-            docker cp /opt/rirs/config.json rirs-frontend:/app/config.json
+            docker pull afridau/afridau:frontend-latest
+            docker stop rirs-f
+            docker run --restart unless-stopped -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
+            docker cp /opt/rirs/config.json rirs-f:/app/config.json
           EOF
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
