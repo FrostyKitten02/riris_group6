@@ -109,8 +109,8 @@ jobs:
         run: |
           ssh server << 'EOF'
             docker pull afridau/afridau:frontend-latest
-            docker stop rirs-f
-            docker rm rirs-f
+            docker stop rirs-f || true
+            docker rm rirs-f || true
             docker run --restart unless-stopped -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
             docker cp /opt/rirs/config.json rirs-f:/usr/share/nginx/html/conf.json
           EOF
@@ -206,9 +206,9 @@ jobs:
         run: |
           ssh server << 'EOF'
             docker pull afridau/afridau:backend-latest
-            docker stop rirs-b
-            docker rm rirs-b
-            docker run --restart unless-stopped -d -p 1001:3000 --name rirs-f afridau/afridau:backend-latest
+            docker stop rirs-b || true
+            docker rm rirs-b || true
+            docker run --restart unless-stopped -d -p 1001:3000 --name rirs-b afridau/afridau:backend-latest
           EOF
 
   upload-artifacts:
