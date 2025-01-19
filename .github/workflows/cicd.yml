@@ -88,19 +88,19 @@ jobs:
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/rirs_id_rsa
-          chmod 600 ~/.ssh/rirs_id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/rirs_is_rsa
+          chmod 600 ~/.ssh/rirs_is_rsa
           ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
       - name: Transfer JSON Config to Server
         run: |
           echo '${{ secrets.FRONTEND_JSON_COFIG }}' > config.json
-          scp -P ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_id_rsa config.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/rirs/config.json
+          scp -P ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa config.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/rirs/config.json
 
       - name: Deploy frontend image
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/rirs_is_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             docker pull afridau/afridau:frontend-latest
-            docker run -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
+            docker run -d -p 1000:80 --name rirs-f afridau/afridau:frontend-latest
             docker cp /opt/rirs/config.json rirs-frontend:/app/config.json
           EOF
 
