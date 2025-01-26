@@ -61,6 +61,12 @@ jobs:
           name: frontend-coverage
           path: ./frontend/coverage/
 
+      - name: Run SonarCloud analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          npx sonar-scanner \-Dsonar.projectKey=${{ secrets.PROJECT_KEY }} \-Dsonar.organization=${{ secrets.ORGANIZATION_KEY }} \-Dsonar.sources=./frontend \-Dsonar.host.url=https://sonarcloud.io/ \-Dsonar.javascript.lcov.reportPaths=./frontend/coverage/lcov.info
+
   docker-build-frontend:
     needs: frontend
     runs-on: ubuntu-latest
