@@ -118,7 +118,6 @@ jobs:
           scp config.json server:/opt/rirs/config.json
       - name: Deploy frontend docker image
         run: |
-          echo "DOCKER_TAG is set to: ${DOCKER_TAG}"
           ssh server bash -s << EOF
             docker pull afridau/afridau:frontend-${DOCKER_TAG}-latest
             docker stop rirs-f || true
@@ -227,7 +226,6 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
       - name: Deploy backend docker image
         run: |
-          echo "DOCKER_TAG is set to: ${DOCKER_TAG}"
           ssh server bash -s << EOF
             docker pull afridau/afridau:backend-${DOCKER_TAG}-latest
             docker stop rirs-b || true
