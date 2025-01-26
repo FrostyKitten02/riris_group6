@@ -61,8 +61,21 @@ jobs:
           name: frontend-coverage
           path: ./frontend/coverage/
 
+  sonarqube-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: SonarQube Scan
+        uses: sonarsource/sonarcloud-github-action@4
+        with:
+          projectBaseDir: ./frontend
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   docker-build-frontend:
-    needs: frontend
+    needs: sonarqube-frontend
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
@@ -174,8 +187,22 @@ jobs:
           name: backend-coverage
           path: ./backend/coverage/
 
+
+  sonarqube-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: SonarQube Scan
+        uses: sonarsource/sonarcloud-github-action@4
+        with:
+          projectBaseDir: ./backend
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   docker-build-backend:
-    needs: backend
+    needs: sonarqube-backend
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
