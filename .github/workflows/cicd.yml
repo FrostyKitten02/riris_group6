@@ -119,7 +119,7 @@ jobs:
           scp config.json server:/opt/rirs/config.json
       - name: Deploy frontend docker image
         run: |
-          ssh server DOCKER_TAG="$DOCKER_TAG" BASH -s  << 'EOF'
+          ssh server DOCKER_TAG="$DOCKER_TAG" bash -s  << 'EOF'
             docker pull afridau/afridau:frontend-$DOCKER_TAG-latest
             docker stop rirs-f || true
             docker rm rirs-f || true
@@ -226,7 +226,7 @@ jobs:
           DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
       - name: Deploy backend docker image
         run: |
-          ssh server DOCKER_TAG="$DOCKER_TAG" BASH -s << 'EOF'
+          ssh server DOCKER_TAG="$DOCKER_TAG" bash -s << 'EOF'
             docker pull afridau/afridau:backend-$DOCKER_TAG-latest
             docker stop rirs-b || true
             docker rm rirs-b || true
