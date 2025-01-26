@@ -119,11 +119,12 @@ jobs:
           scp config.json server:/opt/rirs/config.json
       - name: Deploy frontend docker image
         run: |
-          ssh server bash -s << 'EOF'
-            docker pull afridau/afridau:frontend-$DOCKER_TAG-latest
+          echo "DOCKER_TAG is set to: ${DOCKER_TAG}"
+          ssh server bash -s << EOF
+            docker pull afridau/afridau:frontend-${DOCKER_TAG}-latest
             docker stop rirs-f || true
             docker rm rirs-f || true
-            docker run --restart unless-stopped -d -p 127.0.0.1:1000:80 --name rirs-f afridau/afridau:frontend-latest
+            docker run --restart unless-stopped -d -p 127.0.0.1:1000:80 --name rirs-f afridau/afridau:frontend-${DOCKER_TAG}-latest
             docker cp /opt/rirs/config.json rirs-f:/usr/share/nginx/html/conf.json
           EOF
 
@@ -226,11 +227,12 @@ jobs:
           DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
       - name: Deploy backend docker image
         run: |
-          ssh server bash -s << 'EOF'
-            docker pull afridau/afridau:backend-$DOCKER_TAG-latest
+          echo "DOCKER_TAG is set to: ${DOCKER_TAG}"
+          ssh server bash -s << EOF
+            docker pull afridau/afridau:backend-${DOCKER_TAG}-latest
             docker stop rirs-b || true
             docker rm rirs-b || true
-            docker run --restart unless-stopped -d -p 127.0.0.1:1011:3000 --name rirs-b afridau/afridau:backend-$DOCKER_TAG-latest
+            docker run --restart unless-stopped -d -p 127.0.0.1:1011:3000 --name rirs-b afridau/afridau:backend-${DOCKER_TAG}-latest
           EOF
 
   upload-artifacts:
