@@ -22,6 +22,21 @@ const InvoicesPage: React.FC = () => {
 		}
 	};
 
+
+	async function getInvoices(): Promise<Invoice[] | null> {
+		try {
+			const response = await axios.get(RequestUtil.getBaseApiUrl() + "/db/all", RequestUtil.getDefaultRequestConfig(await auth.getToken()));
+			// Map the response data to Invoice instances
+			const invoiceData: Invoice[] = response.data.map((data: any) =>
+				Invoice.fromJSON(data)
+			);
+			return invoiceData;
+		} catch (error) {
+			console.error("Error fetching invoices:", error);
+			return null;
+		}
+	}
+
 	return (
 		<div id="table-container">
 			<h3>Računi</h3>
@@ -32,6 +47,30 @@ const InvoicesPage: React.FC = () => {
 							Dodaj
 						</Button>
 					</Link>
+					<Button variant="primary" size="sm" onClick={() => {
+						getInvoices()
+							.then(i => {
+								if (i == null) {
+									return
+								}
+
+								const jsonString = JSON.stringify(i, null, 2);
+								const blob = new Blob([jsonString], { type: 'application/json' });
+								const url = URL.createObjectURL(blob);
+
+								const a = document.createElement('a');
+								a.href = url;
+								a.download = "invoice_export";
+								document.body.appendChild(a);
+
+								a.click();
+
+								document.body.removeChild(a);
+								URL.revokeObjectURL(url);
+							})
+					}}>
+						Izvozi
+					</Button>
 					<ExcelFileInput importInvoices={importInvoices} />
 				</div>
 			</div>

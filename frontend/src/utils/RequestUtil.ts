@@ -1,11 +1,12 @@
 import {RawAxiosRequestConfig} from "axios";
+import {ConfigUtil} from "./ConfigUtil";
 
 
 export class RequestUtil {
     private constructor() {}
 
     public static getBaseApiUrl() {
-        return import.meta.env.VITE_BASE_API_URL;
+        return ConfigUtil.getConfig().baseBackendUrl;
     }
 
     public static getDefaultRequestConfig(token: string | null): RawAxiosRequestConfig {
