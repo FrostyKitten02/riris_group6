@@ -9,13 +9,13 @@ on:
     branches:
       - "main"
       - "production"
-  environment:
-    name: ${{ github.ref_name }}
   workflow_dispatch:
 
 jobs:
   frontend:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
     strategy:
       matrix:
         node-version: [20]
@@ -64,6 +64,8 @@ jobs:
   docker-build-frontend:
     needs: frontend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
     if: github.event_name == 'push'
     steps:
       - name: Checkout code
@@ -86,6 +88,8 @@ jobs:
   deploy-frontend:
     needs: docker-build-frontend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
     steps:
       - name: Configure SSH
         run: |
@@ -122,6 +126,8 @@ jobs:
 
   backend:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
     strategy:
       matrix:
         node-version: [20]
@@ -167,6 +173,8 @@ jobs:
   docker-build-backend:
     needs: backend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
     if: github.event_name == 'push'
     steps:
       - name: Checkout code
@@ -189,6 +197,8 @@ jobs:
   deploy-backend:
     needs: docker-build-backend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
     steps:
       - name: Configure SSH
         run: |
@@ -219,6 +229,8 @@ jobs:
 
   upload-artifacts:
     needs: [frontend, backend]
+    environment:
+      name: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     steps:
       - name: Download frontend coverage report
