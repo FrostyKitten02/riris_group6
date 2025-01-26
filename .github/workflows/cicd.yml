@@ -67,6 +67,13 @@ jobs:
         run: |
           npx sonar-scanner \-Dsonar.projectKey=${{ secrets.PROJECT_KEY }} \-Dsonar.organization=${{ secrets.ORGANIZATION_KEY }} \-Dsonar.sources=./frontend \-Dsonar.host.url=https://sonarcloud.io/ \-Dsonar.javascript.lcov.reportPaths=./frontend/coverage/lcov.info
 
+      - name: Wait for SonarCloud Quality Gate
+        uses: sonarsource/sonarcloud-quality-gate-action@v1
+        with:
+          projectKey: ${{ secrets.PROJECT_KEY }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   docker-build-frontend:
     needs: frontend
     runs-on: ubuntu-latest
