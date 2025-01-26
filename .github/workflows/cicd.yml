@@ -82,10 +82,10 @@ jobs:
         env:
           DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
         run: |
-          docker build -t afridau/afridau:frontend-${{ DOCKER_TAG }}-latest .
-          docker tag afridau/afridau:frontend-${{ DOCKER_TAG }}-latest afridau/afridau:frontend-${{ DOCKER_TAG }}-${{ github.run_number }}
-          docker push afridau/afridau:frontend-${{ DOCKER_TAG }}-latest
-          docker push afridau/afridau:frontend-${{ DOCKER_TAG }}-${{ github.run_number }}
+          docker build -t afridau/afridau:frontend-$DOCKER_TAG-latest .
+          docker tag afridau/afridau:frontend-$DOCKER_TAG-latest afridau/afridau:frontend-$DOCKER_TAG-${{ github.run_number }}
+          docker push afridau/afridau:frontend-$DOCKER_TAG-latest
+          docker push afridau/afridau:frontend-$DOCKER_TAG-${{ github.run_number }}
 
   deploy-frontend:
     needs: docker-build-frontend
@@ -120,7 +120,7 @@ jobs:
       - name: Deploy frontend docker image
         run: |
           ssh server << 'EOF'
-            docker pull afridau/afridau:frontend-${{ DOCKER_TAG }}-latest
+            docker pull afridau/afridau:frontend-$DOCKER_TAG-latest
             docker stop rirs-f || true
             docker rm rirs-f || true
             docker run --restart unless-stopped -d -p 127.0.0.1:1000:80 --name rirs-f afridau/afridau:frontend-latest
@@ -194,10 +194,10 @@ jobs:
         env:
           DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
         run: |
-          docker build -t afridau/afridau:backend-${{ DOCKER_TAG }}-latest .
-          docker tag afridau/afridau:backend-${{ DOCKER_TAG }}-latest afridau/afridau:backend-${{ DOCKER_TAG }}-${{ github.run_number }}
-          docker push afridau/afridau:backend-${{ DOCKER_TAG }}-latest
-          docker push afridau/afridau:backend-${{ DOCKER_TAG }}-${{ github.run_number }}
+          docker build -t afridau/afridau:backend-$DOCKER_TAG-latest .
+          docker tag afridau/afridau:backend-$DOCKER_TAG-latest afridau/afridau:backend-$DOCKER_TAG-${{ github.run_number }}
+          docker push afridau/afridau:backend-$DOCKER_TAG-latest
+          docker push afridau/afridau:backend-$DOCKER_TAG-${{ github.run_number }}
 
   deploy-backend:
     needs: docker-build-backend
@@ -226,10 +226,10 @@ jobs:
       - name: Deploy backend docker image
         run: |
           ssh server << 'EOF'
-            docker pull afridau/afridau:backend-${{ DOCKER_TAG }}-latest
+            docker pull afridau/afridau:backend-$DOCKER_TAG-latest
             docker stop rirs-b || true
             docker rm rirs-b || true
-            docker run --restart unless-stopped -d -p 127.0.0.1:1011:3000 --name rirs-b afridau/afridau:backend-${{ DOCKER_TAG }}-latest
+            docker run --restart unless-stopped -d -p 127.0.0.1:1011:3000 --name rirs-b afridau/afridau:backend-$DOCKER_TAG-latest
           EOF
 
   upload-artifacts:
