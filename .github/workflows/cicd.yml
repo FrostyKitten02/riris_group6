@@ -223,6 +223,7 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
+          DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
       - name: Deploy backend docker image
         run: |
           ssh server << 'EOF'
