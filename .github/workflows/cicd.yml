@@ -79,6 +79,8 @@ jobs:
 
       - name: Build and push frontend Docker image
         working-directory: ./frontend
+        env:
+          DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
         run: |
           docker build -t afridau/afridau:frontend-${{ DOCKER_TAG }}-latest .
           docker tag afridau/afridau:frontend-${{ DOCKER_TAG }}-latest afridau/afridau:frontend-${{ DOCKER_TAG }}-${{ github.run_number }}
@@ -109,6 +111,7 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
+          DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
       - name: Transfer JSON Config to Server
         run: |
           echo '${{ secrets.FRONTEND_JSON_COFIG }}' > config.json
@@ -188,6 +191,8 @@ jobs:
 
       - name: Build and push backend Docker image
         working-directory: ./backend
+        env:
+          DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
         run: |
           docker build -t afridau/afridau:backend-${{ DOCKER_TAG }}-latest .
           docker tag afridau/afridau:backend-${{ DOCKER_TAG }}-latest afridau/afridau:backend-${{ DOCKER_TAG }}-${{ github.run_number }}
