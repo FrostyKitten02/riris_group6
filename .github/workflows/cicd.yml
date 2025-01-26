@@ -118,7 +118,6 @@ jobs:
           scp config.json server:/opt/rirs/config.json
       - name: Deploy frontend docker image
         run: |
-          echo "DOCKER_TAG is set to: ${DOCKER_TAG}"
           ssh server bash -s << EOF
             docker pull afridau/afridau:frontend-${DOCKER_TAG}-latest
             docker stop rirs-f || true
@@ -227,7 +226,6 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
       - name: Deploy backend docker image
         run: |
-          echo "DOCKER_TAG is set to: ${DOCKER_TAG}"
           ssh server bash -s << EOF
             docker pull afridau/afridau:backend-${DOCKER_TAG}-latest
             docker stop rirs-b || true
@@ -254,3 +252,15 @@ jobs:
         with:
           name: backend-coverage
           path: ./backend-coverage
+
+  deploy-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
