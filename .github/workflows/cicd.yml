@@ -187,6 +187,19 @@ jobs:
           name: backend-coverage
           path: ./backend/coverage/
 
+      - name: Run SonarCloud analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          npx sonar-scanner \-Dsonar.projectKey=${{ secrets.PROJECT_KEY }} \-Dsonar.organization=${{ secrets.ORGANIZATION_KEY }} \-Dsonar.sources=./frontend \-Dsonar.host.url=https://sonarcloud.io/ \-Dsonar.javascript.lcov.reportPaths=./backend/coverage/lcov.info
+
+      - name: Wait for SonarCloud Quality Gate
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          projectKey: ${{ secrets.PROJECT_KEY }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   docker-build-backend:
     needs: backend
     runs-on: ubuntu-latest
