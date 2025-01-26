@@ -4,14 +4,18 @@ on:
   push:
     branches:
       - "main"
+      - "production"
   pull_request:
     branches:
       - "main"
+      - "production"
   workflow_dispatch:
 
 jobs:
   frontend:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     strategy:
       matrix:
         node-version: [20]
@@ -60,6 +64,8 @@ jobs:
   docker-build-frontend:
     needs: frontend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     if: github.event_name == 'push'
     steps:
       - name: Checkout code
@@ -73,15 +79,19 @@ jobs:
 
       - name: Build and push frontend Docker image
         working-directory: ./frontend
+        env:
+          DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
         run: |
-          docker build -t afridau/afridau:frontend-latest .
-          docker tag afridau/afridau:frontend-latest afridau/afridau:frontend-${{ github.run_number }}
-          docker push afridau/afridau:frontend-latest
-          docker push afridau/afridau:frontend-${{ github.run_number }}
+          docker build -t afridau/afridau:frontend-$DOCKER_TAG-latest .
+          docker tag afridau/afridau:frontend-$DOCKER_TAG-latest afridau/afridau:frontend-$DOCKER_TAG-${{ github.run_number }}
+          docker push afridau/afridau:frontend-$DOCKER_TAG-latest
+          docker push afridau/afridau:frontend-$DOCKER_TAG-${{ github.run_number }}
 
   deploy-frontend:
     needs: docker-build-frontend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     steps:
       - name: Configure SSH
         run: |
@@ -101,6 +111,7 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
+          DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
       - name: Transfer JSON Config to Server
         run: |
           echo '${{ secrets.FRONTEND_JSON_COFIG }}' > config.json
@@ -109,7 +120,7 @@ jobs:
       - name: Deploy frontend docker image
         run: |
           ssh server << 'EOF'
-            docker pull afridau/afridau:frontend-latest
+            docker pull afridau/afridau:frontend-$DOCKER_TAG-latest
             docker stop rirs-f || true
             docker rm rirs-f || true
             docker run --restart unless-stopped -d -p 127.0.0.1:1000:80 --name rirs-f afridau/afridau:frontend-latest
@@ -118,6 +129,8 @@ jobs:
 
   backend:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     strategy:
       matrix:
         node-version: [20]
@@ -163,6 +176,8 @@ jobs:
   docker-build-backend:
     needs: backend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     if: github.event_name == 'push'
     steps:
       - name: Checkout code
@@ -176,15 +191,19 @@ jobs:
 
       - name: Build and push backend Docker image
         working-directory: ./backend
+        env:
+          DOCKER_TAG: ${{ secrets.DOCKER_TAG }}
         run: |
-          docker build -t afridau/afridau:backend-latest .
-          docker tag afridau/afridau:backend-latest afridau/afridau:backend-${{ github.run_number }}
-          docker push afridau/afridau:backend-latest
-          docker push afridau/afridau:backend-${{ github.run_number }}
+          docker build -t afridau/afridau:backend-$DOCKER_TAG-latest .
+          docker tag afridau/afridau:backend-$DOCKER_TAG-latest afridau/afridau:backend-$DOCKER_TAG-${{ github.run_number }}
+          docker push afridau/afridau:backend-$DOCKER_TAG-latest
+          docker push afridau/afridau:backend-$DOCKER_TAG-${{ github.run_number }}
 
   deploy-backend:
     needs: docker-build-backend
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     steps:
       - name: Configure SSH
         run: |
@@ -207,14 +226,16 @@ jobs:
       - name: Deploy backend docker image
         run: |
           ssh server << 'EOF'
-            docker pull afridau/afridau:backend-latest
+            docker pull afridau/afridau:backend-$DOCKER_TAG-latest
             docker stop rirs-b || true
             docker rm rirs-b || true
-            docker run --restart unless-stopped -d -p 127.0.0.1:1011:3000 --name rirs-b afridau/afridau:backend-latest
+            docker run --restart unless-stopped -d -p 127.0.0.1:1011:3000 --name rirs-b afridau/afridau:backend-$DOCKER_TAG-latest
           EOF
 
   upload-artifacts:
     needs: [frontend, backend]
+    environment:
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Download frontend coverage report
