@@ -64,6 +64,7 @@ jobs:
   docker-build-frontend:
     needs: frontend
     runs-on: ubuntu-latest
+    on: manual
     environment:
       name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     if: github.event_name == 'push'
