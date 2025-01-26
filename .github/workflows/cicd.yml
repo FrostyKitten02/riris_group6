@@ -15,7 +15,7 @@ jobs:
   frontend:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.ref_name }}
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     strategy:
       matrix:
         node-version: [20]
@@ -65,7 +65,7 @@ jobs:
     needs: frontend
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.ref_name }}
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     if: github.event_name == 'push'
     steps:
       - name: Checkout code
@@ -91,7 +91,7 @@ jobs:
     needs: docker-build-frontend
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.ref_name }}
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     steps:
       - name: Configure SSH
         run: |
@@ -130,7 +130,7 @@ jobs:
   backend:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.ref_name }}
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     strategy:
       matrix:
         node-version: [20]
@@ -177,7 +177,7 @@ jobs:
     needs: backend
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.ref_name }}
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     if: github.event_name == 'push'
     steps:
       - name: Checkout code
@@ -203,7 +203,7 @@ jobs:
     needs: docker-build-backend
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.ref_name }}
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     steps:
       - name: Configure SSH
         run: |
@@ -235,7 +235,7 @@ jobs:
   upload-artifacts:
     needs: [frontend, backend]
     environment:
-      name: ${{ github.ref_name }}
+      name: ${{ github.ref == 'refs/heads/production' && 'production' || 'main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Download frontend coverage report
